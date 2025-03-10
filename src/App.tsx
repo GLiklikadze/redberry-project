@@ -1,10 +1,12 @@
+import { lazy } from "react";
 import "./App.css";
+const HomePage = lazy(() => import("@/pages/home/HomePage"));
 
 function App() {
   return (
-    <>
-      <h1 className="text-amber-300">Vite + React</h1>
-    </>
+    <div>
+      <HomePage />
+    </div>
   );
 }
 
