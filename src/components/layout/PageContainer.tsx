@@ -1,5 +1,5 @@
 const PageContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <div className="z-0 min-h-[51rem] pt-28">{children}</div>;
+  return <div className="min-h-[51rem] px-[7.5rem] pt-10">{children}</div>;
 };
 
 export default PageContainer;

@@ -1,12 +1,16 @@
 import { lazy } from "react";
 import "./App.css";
-const HomePage = lazy(() => import("@/pages/home/HomePage"));
+import { Route, Routes } from "react-router";
+import RootLayout from "@/components/layout/RootLayout";
+const TasksPage = lazy(() => import("@/pages/tasks/TasksPage"));
 
 function App() {
   return (
-    <div>
-      <HomePage />
-    </div>
+    <Routes>
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<TasksPage />} />
+      </Route>
+    </Routes>
   );
 }
 
