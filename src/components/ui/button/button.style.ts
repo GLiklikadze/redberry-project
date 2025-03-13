@@ -6,9 +6,9 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         header:
-          "bg-violet-custom shadow w-[268px] hover:bg-violet-custom/90 text-",
+          "bg-violet-custom shadow w-[268px] hover:bg-violet-custom/90 text-white",
         "header-outline":
-          "border-violet-custom w-[225px] border-[1px] hover:bg-[#e7dbf5] text-[#212529] bg-white-custom",
+          "border-violet-custom w-[225px] border-[1px] hover:bg-[#e7dbf5] text-[#212529] bg-white",
       },
       size: {
         default: "h-[40px] px-5 py-2.5",
