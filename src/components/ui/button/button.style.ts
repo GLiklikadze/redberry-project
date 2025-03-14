@@ -9,6 +9,9 @@ export const buttonVariants = cva(
           "bg-violet-custom shadow w-[268px] hover:bg-violet-custom/90 text-white",
         "header-outline":
           "border-violet-custom w-[225px] border-[1px] hover:bg-[#e7dbf5] text-[#212529] bg-white",
+        outline:
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "h-[40px] px-5 py-2.5",
