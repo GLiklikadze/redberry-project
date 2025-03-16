@@ -44,6 +44,7 @@ export function Spinner({
   return (
     <span className={spinnerVariants({ show })}>
       <Loader2 className={cn(loaderVariants({ size }), className)} />
+      <span>იტვირთება</span>
       {children}
     </span>
   );

@@ -38,19 +38,35 @@ const taskCreateDefaultValues = {
   status_id: 1,
   employee_id: 0,
   priority_id: 2,
-  department_id: 1,
+  department_id: 0,
+};
+type EmployeeGetObjType = {
+  avatar: string;
+  department: { id: number; name: string };
+  id: string;
+  name: string;
+  surname: string;
 };
 
 const CreatePage = () => {
   const form = useForm<CreateTaskType>({
     defaultValues: taskCreateDefaultValues,
-    mode: "onBlur",
   });
-
+  const department_id = form.watch("department_id");
   const { data: prioritiesData } = useGetPriorities();
   const { data: statusesData } = useGetStatuses();
   const { data: departmentsData } = useGetDepartments();
   const { data: employeesData } = useGetEmployees();
+
+  const employeesFilteredData = employeesData?.filter(
+    (data: EmployeeGetObjType) => data?.department.id === department_id,
+  );
+  console.log(employeesData);
+  const isDepartmentSelected = form.formState?.dirtyFields?.department_id;
+
+  const disabledLabelStyles = isDepartmentSelected ? "" : "text-gray-400";
+
+  console.log(isDepartmentSelected);
 
   const onSubmit = (fieldValues: CreateTaskType) => {
     console.log(fieldValues);
@@ -183,7 +199,7 @@ const CreatePage = () => {
                     >
                       <FormControl>
                         <SelectTrigger className="h-[46px] rounded-[5px]">
-                          <SelectValue></SelectValue>
+                          <SelectValue>ადმინისტრაციის დეპარტამენტი</SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -208,12 +224,13 @@ const CreatePage = () => {
                 name="employee_id"
                 render={({ field: { value, onChange } }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-base">
+                    <FormLabel className={`text-base ${disabledLabelStyles}`}>
                       პასუხისმგებელი თანამშრომელი
                     </FormLabel>
                     <Select
                       value={String(value)}
                       onValueChange={(val) => onChange(Number(val))}
+                      disabled={!isDepartmentSelected}
                     >
                       <FormControl>
                         <SelectTrigger className="h-[46px] rounded-[5px]">
@@ -221,14 +238,23 @@ const CreatePage = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {employeesData?.map((employee: EmployeeObjType) => (
-                          <SelectItem
-                            key={employee?.id}
-                            value={String(employee?.id)}
-                          >
-                            <span>{`${employee?.name} ${employee?.surname}`}</span>
-                          </SelectItem>
-                        ))}
+                        {employeesFilteredData?.map(
+                          (employee: EmployeeObjType) => (
+                            <SelectItem
+                              key={employee?.id}
+                              value={String(employee?.id)}
+                            >
+                              <div className="flex flex-row items-center gap-4">
+                                <img
+                                  src={employee?.avatar}
+                                  className="w-7 rounded-full"
+                                  alt="employee_avatar"
+                                />
+                                <p>{`${employee?.name} ${employee?.surname}`}</p>
+                              </div>
+                            </SelectItem>
+                          ),
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
