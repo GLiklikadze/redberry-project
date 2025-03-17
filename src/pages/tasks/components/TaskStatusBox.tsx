@@ -1,7 +1,4 @@
-type TaskStatusPropsTypes = {
-  taskStatus: string;
-  bgColor: string;
-};
+import { TaskStatusPropsTypes } from "@/pages/tasks/components/TasksPage.types";
 
 const TaskStatusBox: React.FC<TaskStatusPropsTypes> = ({
   taskStatus,
