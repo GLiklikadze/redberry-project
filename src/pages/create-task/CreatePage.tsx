@@ -2,13 +2,12 @@ import { Button } from "@/components/ui/button/button";
 import { Form } from "@/components/ui/form/Form";
 import {
   FormControl,
+  FormDescription,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form/FormComponents";
 import { FormField } from "@/components/ui/form/FormField";
 import { Input } from "@/components/ui/input";
-
 import {
   Select,
   SelectContent,
@@ -30,15 +29,29 @@ import { useGetPriorities } from "@/react-query/query/priorities/prioritiesQuery
 import { useGetStatuses } from "@/react-query/query/statuses/statusesQuery";
 
 import { useForm } from "react-hook-form";
+import { addDays, endOfDay, format, isBefore, startOfDay } from "date-fns";
+import { ka } from "date-fns/locale";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon, PlusCircleIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { useCreateTasks } from "@/react-query/mutation/tasks/tasksMutation";
+import { CreateTasksSchema } from "@/pages/create-task/components/createTasksSchema";
 
 const taskCreateDefaultValues = {
   name: "",
   description: "",
-  due_date: "",
-  status_id: 1,
+  due_date: addDays(new Date(), 1),
+  status_id: 1 as 1 | 2 | 3 | 4,
   employee_id: 0,
-  priority_id: 2,
-  department_id: 0,
+  priority_id: 2 as 1 | 2 | 3,
+  department_id: 1,
 };
 type EmployeeGetObjType = {
   avatar: string;
@@ -51,6 +64,8 @@ type EmployeeGetObjType = {
 const CreatePage = () => {
   const form = useForm<CreateTaskType>({
     defaultValues: taskCreateDefaultValues,
+    resolver: zodResolver(CreateTasksSchema),
+    mode: "onChange",
   });
   const department_id = form.watch("department_id");
   const { data: prioritiesData } = useGetPriorities();
@@ -61,15 +76,31 @@ const CreatePage = () => {
   const employeesFilteredData = employeesData?.filter(
     (data: EmployeeGetObjType) => data?.department.id === department_id,
   );
-  console.log(employeesData);
+  console.log(form?.formState?.errors);
+
   const isDepartmentSelected = form.formState?.dirtyFields?.department_id;
 
   const disabledLabelStyles = isDepartmentSelected ? "" : "text-gray-400";
 
+  const { mutate } = useCreateTasks();
   console.log(isDepartmentSelected);
 
   const onSubmit = (fieldValues: CreateTaskType) => {
-    console.log(fieldValues);
+    const { name, description, due_date, employee_id, priority_id, status_id } =
+      fieldValues;
+    const postObject = {
+      name,
+      description,
+      due_date,
+      employee_id,
+      priority_id,
+      status_id,
+    };
+    mutate(postObject);
+    console.log(postObject);
+  };
+  const disablePastDates = (date: Date) => {
+    return isBefore(endOfDay(date), startOfDay(new Date()));
   };
 
   return (
@@ -84,7 +115,7 @@ const CreatePage = () => {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({ field, formState: { isValid, errors } }) => (
                   <FormItem>
                     <FormLabel className="text-base">სათაური*</FormLabel>
                     <FormControl>
@@ -94,7 +125,12 @@ const CreatePage = () => {
                         className="h-[45px]"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <div
+                      className={`text-gray-msg mt-0.5 text-[10px] font-[350] ${isValid ? "text-green-custom" : ""} ${errors?.name ? "text-red-custom" : ""}`}
+                    >
+                      <p>მინიმუმ 2 სიმბოლო</p>
+                      <p>მაქსიმუმ 255 სიმბოლო</p>
+                    </div>
                   </FormItem>
                 )}
               />
@@ -102,7 +138,7 @@ const CreatePage = () => {
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({ field, formState: { isValid, errors } }) => (
                   <FormItem className="space-x-1.5">
                     <FormLabel className="text-base">აღწერა</FormLabel>
                     <FormControl>
@@ -112,7 +148,12 @@ const CreatePage = () => {
                         className="h-[133px] resize-none"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <div
+                      className={`text-gray-msg mt-0.5 text-[10px] font-[350] ${isValid ? "text-green-custom" : ""} ${errors?.description ? "text-red-custom" : ""}`}
+                    >
+                      <p>მინიმუმ 2 სიმბოლო</p>
+                      <p>მაქსიმუმ 255 სიმბოლო</p>
+                    </div>
                   </FormItem>
                 )}
               />
@@ -149,7 +190,6 @@ const CreatePage = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -179,7 +219,6 @@ const CreatePage = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -199,7 +238,7 @@ const CreatePage = () => {
                     >
                       <FormControl>
                         <SelectTrigger className="h-[46px] rounded-[5px]">
-                          <SelectValue>ადმინისტრაციის დეპარტამენტი</SelectValue>
+                          <SelectValue></SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -215,17 +254,21 @@ const CreatePage = () => {
                         )}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="employee_id"
-                render={({ field: { value, onChange } }) => (
+                render={({
+                  field: { value, onChange },
+                  formState: { errors },
+                }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className={`text-base ${disabledLabelStyles}`}>
-                      პასუხისმგებელი თანამშრომელი
+                    <FormLabel
+                      className={`text-base ${!errors?.employee_id ? disabledLabelStyles : ""}`}
+                    >
+                      პასუხისმგებელი თანამშრომელი*
                     </FormLabel>
                     <Select
                       value={String(value)}
@@ -238,6 +281,10 @@ const CreatePage = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <div className="text-violet-custom flex flex-row gap-2 px-[10px] py-[10px]">
+                          <PlusCircleIcon className="stroke-[1.5]" />
+                          დაამატე თანამშრომელი
+                        </div>
                         {employeesFilteredData?.map(
                           (employee: EmployeeObjType) => (
                             <SelectItem
@@ -257,24 +304,52 @@ const CreatePage = () => {
                         )}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="due_date"
-                render={({ field: { value, onChange } }) => (
-                  <FormItem className="mt-[85px] flex flex-col">
-                    <FormLabel className="text-base">დედლაინი</FormLabel>
-                    <Input
-                      type="date"
-                      value={value}
-                      onChange={onChange}
-                      placeholder="DD/MM/YYYY"
-                      className="h-[45px] w-[318px]"
-                    />
-                    <FormMessage />
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>თარიღი</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "h-[45] w-[318px] justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "dd/MM/yyyy")
+                            ) : (
+                              <span>აირჩიეთ თარიღი</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date ? format(date, "yyyy-MM-dd") : "",
+                            )
+                          }
+                          disabled={disablePastDates}
+                          initialFocus
+                          locale={ka}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>აირჩიეთ მომავალი თარიღი</FormDescription>
                   </FormItem>
                 )}
               />

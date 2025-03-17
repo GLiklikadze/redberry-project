@@ -1,19 +1,19 @@
 export type CreateTaskType = {
   name: string;
-  description: string;
-  due_date: string;
-  status_id: number;
+  description?: string;
+  due_date: Date | string;
+  status_id: 1 | 2 | 3 | 4;
   employee_id: number;
-  priority_id: number;
-  department_id: number;
+  priority_id: 1 | 2 | 3;
+  department_id?: number;
 };
 export type PriorityObj = {
-  id: number;
+  id: 1 | 2 | 3;
   name: string;
   icon: string;
 };
 export type StatusesObj = {
-  id: number;
+  id: 1 | 2 | 3 | 4;
   name: string;
   icon: string;
 };

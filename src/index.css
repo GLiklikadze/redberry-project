@@ -112,8 +112,10 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-display: "FiraGO", "sans-serif";
+  --color-red-custom: #fa4d4d;
   --color-gray-custom: #343a40;
   --color-gray-secondary: #dee2e6;
+  --color-gray-msg: #6c757d;
   --color-black-custom: #212529;
   --color-black-secondary: #0d0f10;
   --color-yellow-custom: #f7bc30;
