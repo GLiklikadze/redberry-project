@@ -61,6 +61,25 @@ type EmployeeGetObjType = {
   surname: string;
 };
 
+const getClassName = (
+  errors: string,
+  fieldName: string,
+  isDirty: boolean,
+  type: string,
+) => {
+  let className = "";
+
+  if (errors === type) {
+    className += "text-red-custom";
+  }
+
+  if (fieldName && errors !== type && isDirty) {
+    className += "text-green-custom";
+  }
+
+  return className;
+};
+
 const CreatePage = () => {
   const form = useForm<CreateTaskType>({
     defaultValues: taskCreateDefaultValues,
@@ -115,7 +134,7 @@ const CreatePage = () => {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field, formState: { isValid, errors } }) => (
+                render={({ field, formState: { errors, isDirty } }) => (
                   <FormItem>
                     <FormLabel className="text-base">სათაური*</FormLabel>
                     <FormControl>
@@ -125,11 +144,27 @@ const CreatePage = () => {
                         className="h-[45px]"
                       />
                     </FormControl>
-                    <div
-                      className={`text-gray-msg mt-0.5 text-[10px] font-[350] ${isValid ? "text-green-custom" : ""} ${errors?.name ? "text-red-custom" : ""}`}
-                    >
-                      <p>მინიმუმ 2 სიმბოლო</p>
-                      <p>მაქსიმუმ 255 სიმბოლო</p>
+                    <div className="text-gray-msg mt-0.5 text-[10px] font-[350]">
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_small",
+                        )}
+                      >
+                        მინიმუმ 2 სიმბოლო
+                      </p>
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_big",
+                        )}
+                      >
+                        მაქსიმუმ 255 სიმბოლო
+                      </p>
                     </div>
                   </FormItem>
                 )}
@@ -138,7 +173,7 @@ const CreatePage = () => {
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field, formState: { isValid, errors } }) => (
+                render={({ field, formState: { errors, isDirty } }) => (
                   <FormItem className="space-x-1.5">
                     <FormLabel className="text-base">აღწერა</FormLabel>
                     <FormControl>
@@ -148,11 +183,27 @@ const CreatePage = () => {
                         className="h-[133px] resize-none"
                       />
                     </FormControl>
-                    <div
-                      className={`text-gray-msg mt-0.5 text-[10px] font-[350] ${isValid ? "text-green-custom" : ""} ${errors?.description ? "text-red-custom" : ""}`}
-                    >
-                      <p>მინიმუმ 2 სიმბოლო</p>
-                      <p>მაქსიმუმ 255 სიმბოლო</p>
+                    <div className="text-gray-msg mt-0.5 text-[10px] font-[350]">
+                      <p
+                        className={getClassName(
+                          String(errors?.description?.type),
+                          field?.name,
+                          isDirty,
+                          "custom",
+                        )}
+                      >
+                        მინიმუმ 4 სიტყვა
+                      </p>
+                      <p
+                        className={getClassName(
+                          String(errors?.description?.type),
+                          field?.name,
+                          isDirty,
+                          "too_big",
+                        )}
+                      >
+                        მაქსიმუმ 255 სიმბოლო
+                      </p>
                     </div>
                   </FormItem>
                 )}

@@ -26,7 +26,7 @@ const TaskCardHeader: React.FC<TaskCardHeaderProps> = ({
   date,
   taskPriorityId,
 }) => {
-  const formattedDate = format(date, "dd MMM, yyyy", { locale: ka });
+  const formattedDate = date && format(date, "dd MMM, yyyy", { locale: ka });
   const priorityTextColor = priorityTextColorsArr?.[taskPriorityId - 1];
   const priorityBorderColor = priorityBorderColorsArr?.[taskPriorityId - 1];
   const randomIndex = Math.floor(Math.random() * departmentBgColorArr.length);
@@ -48,7 +48,7 @@ const TaskCardHeader: React.FC<TaskCardHeaderProps> = ({
             {department}
           </div>
         </div>
-        <span>{formattedDate}</span>
+        {date ? <span>{formattedDate}</span> : ""}
       </div>
     </div>
   );

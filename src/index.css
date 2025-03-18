@@ -127,6 +127,8 @@
   --color-yellow-secondary: #ffbe0b;
   --color-orange-secondary: #fa4d4d;
   --color-pink-secondary: #ff66a8;
+  --color-gray-comments: #f8f3fea6;
+  --color-gray-light: #474747;
 }
 
 @layer base {

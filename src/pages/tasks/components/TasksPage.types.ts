@@ -38,7 +38,7 @@ export type TaskCardHeaderProps = {
   taskIcon: string;
   taskPriority: string;
   department: string;
-  date: string;
+  date?: string;
   taskPriorityId: number;
 };
 export type TaskCardMainProps = {

@@ -4,6 +4,7 @@ export const CreateTasksSchema = z.object({
   name: z.string().nonempty().min(3).max(255),
   description: z
     .string()
+    .max(255, { message: "max_255" })
     .optional()
     .refine(
       (value) => {
