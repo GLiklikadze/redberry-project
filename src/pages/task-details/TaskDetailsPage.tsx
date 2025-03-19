@@ -1,129 +1,181 @@
-import TaskCardHeader from "@/pages/tasks/components/TaskCardHeader";
-import { useGetSingleTask } from "@/react-query/query/tasks/tasksQuery";
-import { Calendar, PieChart, UserIcon } from "lucide-react";
+import { X } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-} from "@/components/ui/select";
-import { useGetStatuses } from "@/react-query/query/statuses/statusesQuery";
-import { StatusesObj } from "@/pages/create-task/CreatePage.types";
-import { format } from "date-fns";
-import { ka } from "date-fns/locale";
-import { useForm } from "react-hook-form";
-import { useChangeTaskStatus } from "@/react-query/mutation/tasks/tasksMutation";
+import { Textarea } from "@/components/ui/textatea";
+import { Button } from "@/components/ui/button/button";
+import { useGetComments } from "@/react-query/query/comments/commentsQuery";
+import left_arrow from "@/assets/left2.png";
+import { useAddComment } from "@/react-query/mutation/comments/commentsMutation";
+import { useState } from "react";
+import { CommentObj } from "@/pages/task-details/components/TaskDetails.types";
+import TaskDetailsBox from "@/pages/task-details/components/TaskDetailsBox";
 
 const TaskDetailsPage = () => {
+  const [activeReply, setActiveReply] = useState<null | number>(null);
   const params = useParams();
-  const { data: singleTaskData } = useGetSingleTask(Number(params?.task_id));
-  const { data: statusesData } = useGetStatuses();
-  const { mutate } = useChangeTaskStatus();
+  const { data: commentsData } = useGetComments(Number(params?.task_id));
+  const { mutate: mutateAddComment } = useAddComment();
+  console.log(commentsData);
 
-  function formatGeorgianDate(date: Date): string {
-    if (date) {
-      return `${format(date, "EEE", { locale: ka })} - ${format(date, "dd/M/yyyy")}`;
-    } else {
-      return "unknown";
-    }
-  }
+  const {
+    control,
+    handleSubmit,
+    reset: commentFormReset,
+  } = useForm<{ comment: string }>({
+    defaultValues: { comment: "" },
+  });
 
-  const { setValue } = useForm<{ status: number }>();
+  const {
+    control: answerControl,
+    handleSubmit: handleAnswerSubmit,
+    reset: answerFormReset,
+  } = useForm<{
+    answer: string;
+  }>({
+    defaultValues: {
+      answer: "",
+    },
+  });
 
-  console.log(singleTaskData);
+  const onSubmit = (commentObj: { comment: string }) => {
+    mutateAddComment({
+      task: Number(params?.task_id),
+      text: commentObj?.comment,
+      parent_id: null,
+    });
+    commentFormReset();
+  };
+
+  const onAnswerSubmit = (answerObj: { answer: string }) => {
+    mutateAddComment({
+      task: Number(params?.task_id),
+      text: answerObj?.answer,
+      parent_id: activeReply,
+    });
+    setActiveReply(null);
+    answerFormReset();
+  };
+  const handleCloseBox = () => {
+    setActiveReply(null);
+  };
+
+  const handleReplyClick = (comment_id: number) => {
+    setActiveReply(comment_id);
+    console.log(comment_id);
+  };
+  const totalComments = commentsData
+    ? commentsData.length +
+      commentsData.flatMap((c: CommentObj) => c.sub_comments || []).length
+    : 0;
+
   return (
     <div className="flex flex-row gap-[14rem]">
-      <section className="max-w-[715px]">
-        <div className="flex flex-col gap-16">
-          <div>
-            <TaskCardHeader
-              department={singleTaskData?.department.name}
-              taskIcon={singleTaskData?.priority.icon}
-              taskPriority={singleTaskData?.priority.name}
-              taskPriorityId={singleTaskData?.priority.id}
-            />
-            <div className="mt-3 flex flex-col gap-[26px]">
-              <h1 className="text-[34px] font-semibold">
-                {singleTaskData?.name}
-              </h1>
-              <p className="text-lg leading-[150%]">
-                {singleTaskData?.description}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-7">
-            <h2 className="text-2xl font-medium">დავალების დეტალები</h2>
-            <div className="flex flex-row items-center gap-[70px]">
-              <div className="flex w-41 flex-row items-center gap-1.5">
-                <PieChart />
-                <span>სტატუსი</span>
-              </div>
-              <div>
-                <Select
-                  // defaultValue={String(singleTaskData?.status?.id)}
-                  onValueChange={(value) => {
-                    setValue("status", Number(value));
-                    if (singleTaskData?.id) {
-                      mutate({
-                        id: singleTaskData.id,
-                        status_id: Number(value),
-                      });
-                    }
-                  }}
-                >
-                  <SelectTrigger className="h-[45px] w-[259px] rounded-[5px]">
-                    <SelectValue></SelectValue>
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {statusesData?.map((statusesObj: StatusesObj) => (
-                      <SelectItem
-                        key={statusesObj?.id}
-                        value={String(statusesObj?.id)}
-                      >
-                        <span>{statusesObj?.name}</span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex flex-row items-center gap-[70px]">
-              <div className="flex w-41 flex-row items-center gap-1.5">
-                <UserIcon />
-                <span>თანამშრომელი</span>
-              </div>
-              <div className="flex flex-row items-center gap-1.5">
-                <img
-                  src={singleTaskData?.employee?.avatar}
-                  className="h-8 w-8 rounded-full"
+      <TaskDetailsBox />
+      <section className="bg-gray-comments mt-11 flex w-[741px] flex-col gap-10 px-11 py-10">
+        <div className="relative">
+          <Controller
+            name="comment"
+            control={control}
+            render={({ field }) => {
+              return (
+                <Textarea
+                  id="comment"
+                  className="h-[8.5rem] w-[40.6rem] resize-none px-5 py-7"
+                  placeholder="დაწერეთ კომენტარი"
+                  {...field}
                 />
-                <div className="flex flex-col">
-                  <div className="text-gray-light text-[11px] font-light whitespace-nowrap">
-                    {singleTaskData?.employee?.department?.name}
-                  </div>
-                  <div className="text-sm">{`${singleTaskData?.employee?.name} ${singleTaskData?.employee?.surname}`}</div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row items-center gap-[70px]">
-              <div className="flex w-41 flex-row items-center gap-1.5 text-sm">
-                <Calendar />
-                <span>დავალების ვადა</span>
-              </div>
-              <div>{formatGeorgianDate(singleTaskData?.due_date)}</div>
-            </div>
+              );
+            }}
+          />
+          <Button variant="comment" onClick={handleSubmit(onSubmit)}>
+            დააკომენტარე
+          </Button>
+        </div>
+        <div className="mt-6 flex flex-row items-center justify-start gap-2.5 space-x-1.5">
+          <div className="text-xl font-medium">კომენტარები</div>
+          <div className="bg-violet-custom h-[22px] w-[30px] rounded-[30px] pt-[2px] text-center text-sm font-medium text-white">
+            {totalComments}
           </div>
         </div>
-      </section>
-      <section className="bg-gray-comments mt-11 w-[741px] px-11 py-10">
-        <div className="flex flex-row items-center justify-start gap-2.5 space-x-1.5">
-          <div className="text-xl font-medium">კომენტარები</div>
-          <div className="bg-violet-custom h-[22px] w-[30px] rounded-[30px] text-center text-sm font-medium text-white">
-            3
-          </div>
+        <div>
+          {commentsData?.map((commentObj: CommentObj) => {
+            return (
+              <div key={commentObj?.id} className="mb-5 flex flex-row gap-3">
+                <img
+                  src={commentObj?.author_avatar}
+                  className="mt-0.5 h-[38px] w-[38px] rounded-full"
+                  alt="author-avatar"
+                />
+                <div className="flex flex-col gap-2">
+                  <p className="text-lg font-semibold">
+                    {commentObj?.author_nickname}
+                  </p>
+                  <p>{commentObj?.text}</p>
+                  {activeReply === commentObj?.id ? (
+                    <div className="relative">
+                      <Controller
+                        name="answer"
+                        control={answerControl}
+                        render={({ field }) => {
+                          return (
+                            <Textarea
+                              id="answer"
+                              className="h-[8rem] w-[37.5rem] resize-none px-5 pt-7 pb-14"
+                              placeholder="დაწერეთ პასუხი"
+                              {...field}
+                            />
+                          );
+                        }}
+                      />
+                      <Button variant="cancel" onClick={handleCloseBox}>
+                        <X className="stroke-3" size={48} />
+                      </Button>
+                      <Button
+                        variant="comment"
+                        onClick={handleAnswerSubmit(onAnswerSubmit)}
+                      >
+                        დააკომენტარე
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleReplyClick(commentObj?.id)}
+                      className="flex flex-row items-center gap-1.5"
+                    >
+                      <img
+                        src={left_arrow}
+                        alt="reply-icon"
+                        className="h-4 w-4"
+                      />
+                      <span className="text-violet-custom text-xs">
+                        უპასუხე
+                      </span>
+                    </button>
+                  )}
+
+                  {commentObj?.sub_comments.length > 0 &&
+                    commentObj?.sub_comments?.map((subCommentObj) => (
+                      <div
+                        key={subCommentObj?.id}
+                        className="mt-5 flex flex-row gap-3"
+                      >
+                        <img
+                          src={subCommentObj?.author_avatar}
+                          className="mt-0.5 h-[38px] w-[38px] rounded-full"
+                          alt="author-avatar"
+                        />
+                        <div className="flex flex-col gap-2">
+                          <p className="text-lg font-semibold">
+                            {subCommentObj.author_nickname}
+                          </p>
+                          <p>{subCommentObj.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

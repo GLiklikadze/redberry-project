@@ -23,7 +23,7 @@ import {
   PriorityObj,
   StatusesObj,
 } from "@/pages/create-task/CreatePage.types";
-import { useGetEmployees } from "@/react-query/employees/employeesQuery";
+import { useGetEmployees } from "@/react-query/query/employees/employeesQuery";
 import { useGetDepartments } from "@/react-query/query/departments/departmentsQuery";
 import { useGetPriorities } from "@/react-query/query/priorities/prioritiesQuery";
 import { useGetStatuses } from "@/react-query/query/statuses/statusesQuery";
@@ -342,7 +342,7 @@ const CreatePage = () => {
                               key={employee?.id}
                               value={String(employee?.id)}
                             >
-                              <div className="flex flex-row items-center gap-4">
+                              <div className="flex flex-row items-center gap-1.5">
                                 <img
                                   src={employee?.avatar}
                                   className="w-7 rounded-full"
