@@ -1,3 +1,5 @@
+import { UseFormReturn } from "react-hook-form";
+
 export type StatusObjectType = {
   id: number;
   name: string;
@@ -38,6 +40,7 @@ export type TaskCardHeaderProps = {
   taskIcon: string;
   taskPriority: string;
   department: string;
+  departmentId: number;
   date?: string;
   taskPriorityId: number;
 };
@@ -48,4 +51,13 @@ export type TaskCardMainProps = {
 export type TaskStatusPropsTypes = {
   taskStatus: string;
   bgColor: string;
+};
+export type FilterObj = {
+  departments: number[];
+  employees: number;
+  priorities: number[];
+};
+export type TaskSearchFormProps = {
+  form: UseFormReturn<FilterObj>;
+  onSubmit: (formValues: FilterObj) => void;
 };

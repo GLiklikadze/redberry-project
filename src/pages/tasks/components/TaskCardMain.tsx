@@ -6,8 +6,10 @@ const TaskCardMain: React.FC<TaskCardMainProps> = ({
 }) => {
   return (
     <div className="space-y-3 px-[10.5px]">
-      <h3 className="text-[15px] font-semibold">{taskName}</h3>
-      <p className="text-sm text-[14px] font-normal">{taskDescription}</p>
+      <h3 className="truncate text-[15px] font-semibold">{taskName}</h3>
+      <p className="max-h-10 truncate text-sm text-[14px] font-normal">
+        {taskDescription}
+      </p>
     </div>
   );
 };

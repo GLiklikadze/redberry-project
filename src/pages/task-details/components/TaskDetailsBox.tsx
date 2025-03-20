@@ -28,6 +28,7 @@ const TaskDetailsBox = () => {
         <div>
           <TaskCardHeader
             department={singleTaskData?.department.name}
+            departmentId={singleTaskData?.department.id}
             taskIcon={singleTaskData?.priority.icon}
             taskPriority={singleTaskData?.priority.name}
             taskPriorityId={singleTaskData?.priority.id}

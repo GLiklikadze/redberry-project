@@ -62,7 +62,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex h-[6.25rem] items-center justify-between bg-gray-100">
+    <div className="flex h-[6.25rem] w-full items-center justify-between bg-gray-100">
       <Link to="/">
         <div className="ml-[7.5rem] flex flex-row">
           <h1 className="text-3xl font-normal text-[#8338EC]">Momentum</h1>

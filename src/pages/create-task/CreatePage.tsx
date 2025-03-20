@@ -61,31 +61,29 @@ type EmployeeGetObjType = {
   surname: string;
 };
 
-const getClassName = (
-  errors: string,
-  fieldName: string,
-  isDirty: boolean,
-  type: string,
-) => {
-  let className = "";
-
-  if (errors === type) {
-    className += "text-red-custom";
-  }
-
-  if (fieldName && errors !== type && isDirty) {
-    className += "text-green-custom";
-  }
-
-  return className;
-};
-
 const CreatePage = () => {
   const form = useForm<CreateTaskType>({
     defaultValues: taskCreateDefaultValues,
     resolver: zodResolver(CreateTasksSchema),
     mode: "onChange",
   });
+  const getClassName = (
+    errors: string,
+    fieldName: string,
+    isDirty: boolean,
+    type: string,
+  ) => {
+    let className = "";
+
+    if (errors === type) {
+      className += "text-red-custom";
+    }
+    if (fieldName && errors !== type && isDirty) {
+      className += "text-green-custom";
+    }
+
+    return className;
+  };
   const department_id = form.watch("department_id");
   const { data: prioritiesData } = useGetPriorities();
   const { data: statusesData } = useGetStatuses();
@@ -96,6 +94,7 @@ const CreatePage = () => {
     (data: EmployeeGetObjType) => data?.department.id === department_id,
   );
   console.log(form?.formState?.errors);
+  console.log(form?.formState?.dirtyFields);
 
   const isDepartmentSelected = form.formState?.dirtyFields?.department_id;
 

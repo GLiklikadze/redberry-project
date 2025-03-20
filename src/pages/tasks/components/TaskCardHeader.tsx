@@ -17,20 +17,23 @@ const departmentBgColorArr = [
   "bg-blue-custom",
   "bg-yellow-secondary",
   "bg-orange-secondary",
+  "bg-pink-secondary",
+  "bg-blue-custom",
+  "bg-yellow-secondary",
 ];
 
 const TaskCardHeader: React.FC<TaskCardHeaderProps> = ({
   taskIcon,
   taskPriority,
   department,
+  departmentId,
   date,
   taskPriorityId,
 }) => {
   const formattedDate = date && format(date, "dd MMM, yyyy", { locale: ka });
   const priorityTextColor = priorityTextColorsArr?.[taskPriorityId - 1];
   const priorityBorderColor = priorityBorderColorsArr?.[taskPriorityId - 1];
-  const randomIndex = Math.floor(Math.random() * departmentBgColorArr.length);
-  const departmentBgColor = departmentBgColorArr?.[randomIndex];
+  const departmentBgColor = departmentBgColorArr?.[departmentId - 1];
 
   return (
     <div className="flex flex-col gap-3">
