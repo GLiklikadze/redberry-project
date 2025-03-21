@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textatea";
 import {
   CreateTaskType,
   DepartmentObjType,
+  EmployeeGetObjType,
   EmployeeObjType,
   PriorityObj,
   StatusesObj,
@@ -27,12 +28,10 @@ import { useGetEmployees } from "@/react-query/query/employees/employeesQuery";
 import { useGetDepartments } from "@/react-query/query/departments/departmentsQuery";
 import { useGetPriorities } from "@/react-query/query/priorities/prioritiesQuery";
 import { useGetStatuses } from "@/react-query/query/statuses/statusesQuery";
-
 import { useForm } from "react-hook-form";
 import { addDays, endOfDay, format, isBefore, startOfDay } from "date-fns";
 import { ka } from "date-fns/locale";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
   Popover,
   PopoverContent,
@@ -43,6 +42,8 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { useCreateTasks } from "@/react-query/mutation/tasks/tasksMutation";
 import { CreateTasksSchema } from "@/pages/create-task/components/createTasksSchema";
+import { useNavigate } from "react-router";
+import { useDialog } from "@/context/useDialog";
 
 const taskCreateDefaultValues = {
   name: "",
@@ -53,13 +54,6 @@ const taskCreateDefaultValues = {
   priority_id: 2 as 1 | 2 | 3,
   department_id: 1,
 };
-type EmployeeGetObjType = {
-  avatar: string;
-  department: { id: number; name: string };
-  id: string;
-  name: string;
-  surname: string;
-};
 
 const CreatePage = () => {
   const form = useForm<CreateTaskType>({
@@ -67,6 +61,7 @@ const CreatePage = () => {
     resolver: zodResolver(CreateTasksSchema),
     mode: "onChange",
   });
+  const navigate = useNavigate();
   const getClassName = (
     errors: string,
     fieldName: string,
@@ -115,12 +110,14 @@ const CreatePage = () => {
       status_id,
     };
     mutate(postObject);
+    form.reset();
+    navigate("/");
     console.log(postObject);
   };
   const disablePastDates = (date: Date) => {
     return isBefore(endOfDay(date), startOfDay(new Date()));
   };
-
+  const { setOpen } = useDialog();
   return (
     <>
       <h2 className="mb-6 text-[2.13rem] font-semibold">
@@ -331,10 +328,13 @@ const CreatePage = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <div className="text-violet-custom flex flex-row gap-2 px-[10px] py-[10px]">
+                        <button
+                          onClick={() => setOpen(true)}
+                          className="text-violet-custom flex flex-row gap-2 px-[10px] py-[10px]"
+                        >
                           <PlusCircleIcon className="stroke-[1.5]" />
                           დაამატე თანამშრომელი
-                        </div>
+                        </button>
                         {employeesFilteredData?.map(
                           (employee: EmployeeObjType) => (
                             <SelectItem

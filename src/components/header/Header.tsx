@@ -2,64 +2,66 @@ import hourglass from "@/assets/Hourglass.svg";
 import { Button } from "@/components/ui/button/button";
 import button_plus from "@/assets/button/add.svg";
 import { Link } from "react-router";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogDescription,
-  DialogTrigger,
-  DialogTitle,
-  DialogClose,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { FormField } from "@/components/ui/form/FormField";
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form/FormComponents";
-import { Input } from "@/components/ui/input";
-import { FormProvider, useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useGetDepartments } from "@/react-query/query/departments/departmentsQuery";
-import { useCreateEmployees } from "@/react-query/mutation/employees/employeesMutation";
+import { useDialog } from "@/context/useDialog";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogDescription,
+//   DialogTrigger,
+//   DialogTitle,
+//   DialogClose,
+//   DialogFooter,
+// } from "@/components/ui/dialog";
+// import { FormField } from "@/components/ui/form/FormField";
+// import {
+//   FormControl,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form/FormComponents";
+// import { Input } from "@/components/ui/input";
+// import { FormProvider, useForm } from "react-hook-form";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { useGetDepartments } from "@/react-query/query/departments/departmentsQuery";
+// import { useCreateEmployees } from "@/react-query/mutation/employees/employeesMutation";
 
-type EmployeeFormType = {
-  name: string;
-  surname: string;
-  avatar: File | null;
-  department_id: number;
-};
+// type EmployeeFormType = {
+//   name: string;
+//   surname: string;
+//   avatar: File | null;
+//   department_id: number;
+// };
 
 export type DepartmentObjType = {
   id: number;
   name: string;
 };
 const Header = () => {
-  const { data: departmentsData } = useGetDepartments();
+  // const { data: departmentsData } = useGetDepartments();
 
-  const form = useForm<EmployeeFormType>({
-    defaultValues: {
-      name: "",
-      surname: "",
-      avatar: null,
-      department_id: 0,
-    },
-    mode: "onBlur",
-  });
-  const { mutate: mutateCreateEmployees } = useCreateEmployees();
+  // const form = useForm<EmployeeFormType>({
+  //   defaultValues: {
+  //     name: "",
+  //     surname: "",
+  //     avatar: null,
+  //     department_id: 0,
+  //   },
+  //   mode: "onBlur",
+  // });
+  // const { mutate: mutateCreateEmployees } = useCreateEmployees();
 
-  const onSubmit = (employFormValues: EmployeeFormType) => {
-    mutateCreateEmployees(employFormValues);
-    console.log(employFormValues);
-  };
+  // const onSubmit = (employFormValues: EmployeeFormType) => {
+  //   mutateCreateEmployees(employFormValues);
+  //   console.log(employFormValues);
+  // };
+  const { setOpen } = useDialog();
 
   return (
     <div className="flex h-[6.25rem] w-full items-center justify-between bg-gray-100">
@@ -71,7 +73,7 @@ const Header = () => {
       </Link>
 
       <div className="mr-[7.5rem] flex gap-5">
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger asChild>
             <Button variant="header-outline">თანამშრომლის შექმნა</Button>
           </DialogTrigger>
@@ -195,7 +197,10 @@ const Header = () => {
               </DialogClose>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
+        <Button variant="header-outline" onClick={() => setOpen(true)}>
+          თანამშრომლის შექმნა
+        </Button>
         <Link to="create-task">
           <Button variant="header" className="font-display">
             <img src={button_plus} alt="plus" />

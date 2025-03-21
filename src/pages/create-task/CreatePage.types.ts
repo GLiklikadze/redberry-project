@@ -28,3 +28,10 @@ export type EmployeeObjType = {
   avatar: string;
   department_id: number;
 };
+export type EmployeeGetObjType = {
+  avatar: string;
+  department: { id: number; name: string };
+  id: string;
+  name: string;
+  surname: string;
+};
