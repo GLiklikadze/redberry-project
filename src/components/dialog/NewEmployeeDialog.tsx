@@ -62,6 +62,7 @@ const NewEmployeeDialog = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     form.setValue("avatar", null);
+    setOpen(false);
   };
   const { open, setOpen } = useDialog();
   return (
