@@ -13,6 +13,7 @@ const CreatePage = () => {
   const formKey = "createTaskData";
   const savedData = localStorage.getItem(formKey);
   const parsedData = JSON.parse(savedData as string);
+
   const form = useForm<CreateTaskType>({
     defaultValues: parsedData ?? taskCreateDefaultValues,
     resolver: zodResolver(CreateTasksSchema),

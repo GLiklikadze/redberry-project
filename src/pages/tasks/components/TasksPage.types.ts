@@ -60,4 +60,5 @@ export type FilterObj = {
 export type TaskSearchFormProps = {
   form: UseFormReturn<FilterObj>;
   onSubmit: (formValues: FilterObj) => void;
+  setFilteredTaskData: React.Dispatch<React.SetStateAction<TaskObjType[]>>;
 };

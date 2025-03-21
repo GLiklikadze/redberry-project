@@ -17,14 +17,36 @@ import { useGetTasks } from "@/react-query/query/tasks/tasksQuery";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import TaskSearchForm from "@/pages/tasks/components/TaskSearchForm";
-// import { useSearchParams } from "react-router";
-// import qs from "qs";
+
+const defaultValues = {
+  priorities: [],
+  departments: [],
+  employees: 0,
+};
 
 const TasksPage = () => {
   const { data: statusesData } = useGetStatuses();
   const { data: tasksData } = useGetTasks();
   const [filteredTaskData, setFilteredTaskData] = useState(tasksData ?? []);
-  // const [searchParams, setSearchParams] = useSearchParams();
+
+  const formKey = "TaskSearchData";
+  const savedData = localStorage.getItem(formKey);
+  const parsedData = JSON.parse(savedData as string);
+
+  const form = useForm<FilterObj>({
+    defaultValues: parsedData ?? defaultValues,
+  });
+  const watchedData = form.watch();
+
+  useEffect(() => {
+    localStorage.setItem(formKey, JSON.stringify(watchedData));
+  }, [watchedData]);
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem(formKey);
+    };
+  }, []);
 
   useEffect(() => {
     if (tasksData) {
@@ -32,43 +54,7 @@ const TasksPage = () => {
     }
   }, [tasksData]);
 
-  // const parsedQueryParams = qs.parse(searchParams.toString());
-
-  const form = useForm<FilterObj>({
-    defaultValues: {
-      priorities: [],
-      departments: [],
-      employees: 0,
-    },
-  });
-  // const priorities = form.watch("priorities");
-  // const departments = form.watch("departments");
-  // const employees = form.watch("employees");
-  // const iSubmited = form.formState.isSubmitted;
-  // console.log(searchParams);
-
-  // useEffect(() => {
-  //   if (iSubmited) {
-  //     setSearchParams(
-  //       qs.stringify(
-  //         {
-  //           departments: departments,
-  //           priorities: priorities,
-  //           employees: employees,
-  //         },
-  //         {
-  //           skipNulls: true,
-  //           filter: (_, value) => {
-  //             return value || undefined;
-  //           },
-  //         },
-  //       ),
-  //     );
-  //   }
-  // }, [departments, priorities, employees, iSubmited, setSearchParams]);
-
-  console.log(tasksData);
-
+  console.log(filteredTaskData);
   const onSubmit = (formValues: FilterObj) => {
     console.log(formValues);
     const newData = tasksData?.filter((taskObj: TaskObjType) => {
@@ -92,7 +78,11 @@ const TasksPage = () => {
   return (
     <div>
       <h2 className="text-[2.13rem] font-semibold">დავალებების გვერდი</h2>
-      <TaskSearchForm form={form} onSubmit={onSubmit} />
+      <TaskSearchForm
+        form={form}
+        onSubmit={onSubmit}
+        setFilteredTaskData={setFilteredTaskData}
+      />
       <section className="mt-6">
         <div className="flex flex-row gap-[52px]">
           {statusesData?.map((statusObj: StatusObjectType) => (

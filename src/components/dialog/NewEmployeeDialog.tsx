@@ -27,11 +27,14 @@ import { useCreateEmployees } from "@/react-query/mutation/employees/employeesMu
 import { useGetDepartments } from "@/react-query/query/departments/departmentsQuery";
 import { Button } from "@/components/ui/button/button";
 import { useDialog } from "@/context/useDialog";
+import { getClassName } from "@/pages/create-task/components/utils";
+import { NewEmployeeFormSchema } from "@/components/dialog/NewEmployeeFormSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type EmployeeFormType = {
   name: string;
   surname: string;
-  avatar: File | null;
+  avatar: File;
   department_id: number;
 };
 export type DepartmentObjType = {
@@ -45,16 +48,20 @@ const NewEmployeeDialog = () => {
     defaultValues: {
       name: "",
       surname: "",
-      avatar: null,
+      avatar: undefined,
       department_id: 0,
     },
+    resolver: zodResolver(NewEmployeeFormSchema),
     mode: "onChange",
   });
   const { mutate: mutateCreateEmployees } = useCreateEmployees();
 
   const onSubmit = (employFormValues: EmployeeFormType) => {
     mutateCreateEmployees(employFormValues);
-    console.log(employFormValues);
+    form.reset();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    form.setValue("avatar", null);
   };
   const { open, setOpen } = useDialog();
   return (
@@ -72,7 +79,11 @@ const NewEmployeeDialog = () => {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({
+                  field,
+                  formState: { errors },
+                  fieldState: { isDirty },
+                }) => (
                   <FormItem className="w-[384px]">
                     <FormLabel className="text-base">სახელი*</FormLabel>
                     <FormControl>
@@ -82,14 +93,39 @@ const NewEmployeeDialog = () => {
                         className="h-[42px]"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <div className="text-gray-msg mt-0.5 text-[10px] font-[350]">
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_small",
+                        )}
+                      >
+                        მინიმუმ 2 სიმბოლო
+                      </p>
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_big",
+                        )}
+                      >
+                        მაქსიმუმ 255 სიმბოლო
+                      </p>
+                    </div>
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="surname"
-                render={({ field }) => (
+                render={({
+                  field,
+                  formState: { errors },
+                  fieldState: { isDirty },
+                }) => (
                   <FormItem className="w-[384px]">
                     <FormLabel className="text-base">გვარი*</FormLabel>
                     <FormControl>
@@ -99,7 +135,28 @@ const NewEmployeeDialog = () => {
                         className="h-[42px] w-full"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <div className="text-gray-msg mt-0.5 text-[10px] font-[350]">
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_small",
+                        )}
+                      >
+                        მინიმუმ 2 სიმბოლო
+                      </p>
+                      <p
+                        className={getClassName(
+                          String(errors?.name?.type),
+                          field?.name,
+                          isDirty,
+                          "too_big",
+                        )}
+                      >
+                        მაქსიმუმ 255 სიმბოლო
+                      </p>
+                    </div>
                   </FormItem>
                 )}
               />
@@ -113,7 +170,7 @@ const NewEmployeeDialog = () => {
                   <FormControl>
                     <Input
                       type="file"
-                      accept="image/*"
+                      accept="image/png, image/jpeg, image/gif, image/webp"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
