@@ -1,3 +1,5 @@
+import { UseFormReturn } from "react-hook-form";
+
 export type CreateTaskType = {
   name: string;
   description?: string;
@@ -34,4 +36,9 @@ export type EmployeeGetObjType = {
   id: string;
   name: string;
   surname: string;
+};
+
+export type CreateTaskFormProps = {
+  form: UseFormReturn<CreateTaskType>;
+  onSubmit: (formValues: CreateTaskType) => void;
 };

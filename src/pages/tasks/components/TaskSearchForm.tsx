@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   EmployeeObjType,
   PriorityObj,
-} from "@/pages/create-task/CreatePage.types";
+} from "@/pages/create-task/components/CreatePage.types";
 import { Label } from "@/components/ui/label";
 import { DepartmentObjType } from "@/components/header/Header";
 import { FormField } from "@/components/ui/form/FormField";

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { useGetStatuses } from "@/react-query/query/statuses/statusesQuery";
-import { StatusesObj } from "@/pages/create-task/CreatePage.types";
+import { StatusesObj } from "@/pages/create-task/components/CreatePage.types";
 import { useChangeTaskStatus } from "@/react-query/mutation/tasks/tasksMutation";
 import { formatGeorgianDate } from "@/pages/task-details/utils/dateFormat";
 import { useForm } from "react-hook-form";
